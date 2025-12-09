@@ -1,6 +1,10 @@
 package com.example.paypals.data.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import com.example.paypals.data.local.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -15,4 +19,7 @@ interface UserDao {
 
      @Query("DELETE FROM users WHERE id = :userId")
      suspend fun deleteUserById(userId: Int)
+
+     @Update
+     suspend fun updateUser(user: UserEntity)
 }

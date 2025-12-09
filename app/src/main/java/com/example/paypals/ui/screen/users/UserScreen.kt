@@ -5,8 +5,10 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,6 +59,7 @@ import com.example.paypals.ui.components.EmptyStateScreen
 import com.example.paypals.utils.getFileNameFromUri
 import com.example.paypals.utils.getInitialAndColor
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserScreen(
      userViewModel: UserViewModel = hiltViewModel(),
@@ -71,6 +74,7 @@ fun UserScreen(
 
      val users by userViewModel.users.collectAsState()
      var newUserName by remember { mutableStateOf("") }
+     var userToEdit by remember { mutableStateOf<User?>(null) }
 
      val context = LocalContext.current
      var profileImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -78,8 +82,9 @@ fun UserScreen(
      val emptyState by userViewModel.emptyState.collectAsState()
 
      val imagePickerLauncher = rememberLauncherForActivityResult(
-          contract = ActivityResultContracts.GetContent()
+          contract = ActivityResultContracts.OpenDocument()
      ) { uri: Uri? ->
+          Log.d("IMG_DEBUG", "URI recibido: $uri")
           profileImageUri = uri
           selectedFileName = uri?.let { getFileNameFromUri(context, it) }
 
@@ -89,8 +94,9 @@ fun UserScreen(
                          it,
                          Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-               } catch (e: SecurityException) {
-                    Log.e("Oscar", "No se pudo tomar el permiso persistente", e)
+                    Log.d("IMG_DEBUG", "Permiso persistente tomando OK para $it")
+               } catch (e: Exception) {
+                    Log.e("IMG_DEBUG", "ERROR al tomar permiso persistente", e)
                }
           }
      }
@@ -124,7 +130,7 @@ fun UserScreen(
                Box(
                     modifier = Modifier
                          .size(72.dp)
-                         .clickable { imagePickerLauncher.launch("image/*") },
+                         .clickable { imagePickerLauncher.launch(arrayOf("image/*")) },
                     contentAlignment = Alignment.Center
                ) {
                     if (profileImageUri != null) {
@@ -209,26 +215,6 @@ fun UserScreen(
                     item {
 
                          EmptyStateScreen(emptyState)
-//                         Column(
-//                              modifier = Modifier
-//                                   .fillMaxWidth()
-//                                   .padding(top = 32.dp),
-//                              horizontalAlignment = Alignment.CenterHorizontally
-//                         ) {
-//                              Image(
-//                                   painter = painterResource(R.drawable.ghostnodata),
-//                                   contentDescription = "Sin usuarios",
-//                                   modifier = Modifier.size(200.dp)
-//                              )
-//                              Spacer(modifier = Modifier.height(16.dp))
-//                              Text(
-//                                   text = "¡Boo! No hay usuarios todavía...",
-//                                   style = MaterialTheme.typography.titleLarge.copy(
-//                                        fontStyle = FontStyle.Italic
-//                                   ),
-//                                   color = MaterialTheme.colorScheme.onSurfaceVariant
-//                              )
-//                         }
                     }
                } else {
                     items(users) { user ->
@@ -237,6 +223,12 @@ fun UserScreen(
                               modifier = Modifier
                                    .fillMaxWidth()
                                    .padding(vertical = 8.dp)
+                                   .combinedClickable(
+                                        onClick = {},
+                                        onLongClick = {
+                                             userToEdit = user
+                                        }
+                                   )
                          ) {
                               val imageUri = user.profileImageUri
                               if (imageUri.isNotBlank()) {
@@ -303,6 +295,21 @@ fun UserScreen(
                     userToDelete = null
                },
                onDismiss = { userToDelete = null }
+          )
+     }
+
+     if (userToEdit != null) {
+          EditUserDialog(
+               user = userToEdit!!,
+               onDismiss = { userToEdit = null },
+               onConfirm = { newName, newUri ->
+                    userViewModel.updateUser(
+                         id = userToEdit!!.id,
+                         name = newName,
+                         profileUri = newUri?.toString() ?: userToEdit!!.profileImageUri
+                    )
+                    userToEdit = null
+               }
           )
      }
 }

@@ -14,6 +14,7 @@ import com.example.paypals.domain.usecase.payment.PaymentUseCases
 import com.example.paypals.domain.usecase.user.AddUserUseCase
 import com.example.paypals.domain.usecase.user.DeleteUserUseCase
 import com.example.paypals.domain.usecase.user.GetAllUsersUseCase
+import com.example.paypals.domain.usecase.user.UpdateUserUseCase
 import com.example.paypals.domain.usecase.user.UserUseCases
 import dagger.Module
 import dagger.Provides
@@ -31,7 +32,8 @@ object UseCaseModule {
           return UserUseCases(
                getAllUsers = GetAllUsersUseCase(userRepository),
                addUser = AddUserUseCase(userRepository),
-               deleteUser = DeleteUserUseCase(userRepository)
+               deleteUser = DeleteUserUseCase(userRepository),
+               updateUser = UpdateUserUseCase(userRepository)
           )
      }
 

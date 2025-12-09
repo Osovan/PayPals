@@ -55,4 +55,12 @@ class UserViewModel @Inject constructor(
                userUseCases.deleteUser(userId)
           }
      }
+
+     fun updateUser(id: Int, name: String, profileUri: String) {
+          viewModelScope.launch {
+               userUseCases.updateUser(
+                    User(id = id, name = name, profileImageUri = profileUri)
+               )
+          }
+     }
 }

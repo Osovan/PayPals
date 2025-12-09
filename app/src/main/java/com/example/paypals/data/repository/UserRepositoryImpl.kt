@@ -27,4 +27,8 @@ class UserRepositoryImpl @Inject constructor(
      override suspend fun deleteUserById(userId: Int) {
           userDao.deleteUserById(userId)
      }
+
+     override suspend fun updateUser(user: User) {
+          userDao.updateUser(user.toEntity())
+     }
 }
