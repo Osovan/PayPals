@@ -1,8 +1,13 @@
 package com.example.paypals.ui.navigation
 
-sealed class Routes (val route: String) {
-     object ScreenGroups: Routes("GroupScreen")
-     object ScreenPays: Routes("ScreenPays")
-     object UserScreen: Routes("UserScreen")
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-}
+@Serializable
+data object ScreenGroups : NavKey
+
+@Serializable
+data object ScreenPays : NavKey
+
+@Serializable
+data object UserScreen : NavKey

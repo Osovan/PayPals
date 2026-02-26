@@ -19,77 +19,48 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import com.example.paypals.MainTopAppBar
 import com.example.paypals.ui.screen.groups.GroupScreen
 import com.example.paypals.ui.screen.pay.PaymentScreen
 import com.example.paypals.ui.screen.users.UserScreen
 import com.example.paypals.ui.screen.users.UserViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavigationScreen() {
-     var navigationSelectedItem by remember {
-          mutableIntStateOf(0)
-     }
+     val backStack = rememberNavBackStack(ScreenGroups)
 
-     /**
-      * by using the rememberNavController()
-      * we can get the instance of the navController
-      */
-     val navController = rememberNavController()
-     val userViewModel: UserViewModel = viewModel()
+     val currentKey = backStack.lastOrNull()
 
-//scaffold to hold our bottom navigation Bar
      Scaffold(
           modifier = Modifier.fillMaxSize(),
-          //topBar = { MainTopAppBar() },
           bottomBar = {
                NavigationBar {
-                    //getting the list of bottom navigation items for our data class
                     BottomNavigationItem().bottomNavigationItems()
-                         .forEachIndexed { index, navigationItem ->
-
-                              //iterating all items with their respective indexes
+                         .forEach { item ->
                               NavigationBarItem(
-                                   selected = index == navigationSelectedItem,
-                                   label = {
-                                        Text(navigationItem.label)
-                                   },
-                                   icon = {
-                                        Icon(
-                                             navigationItem.icon,
-                                             contentDescription = navigationItem.label
-                                        )
-                                   },
+                                   selected = currentKey == item.key,
+                                   label = { Text(item.label) },
+                                   icon = { Icon(item.icon, contentDescription = item.label) },
                                    onClick = {
-                                        navigationSelectedItem = index
-                                        navController.navigate(navigationItem.route) {
-                                             popUpTo(navController.graph.findStartDestination().id) {
-                                                  saveState = true
-                                             }
-                                             launchSingleTop = true
-                                             restoreState = true
-                                        }
+                                        backStack.clear()
+                                        backStack.add(item.key)
                                    }
                               )
                          }
                }
           }
      ) { paddingValues ->
-          NavHost(
-               navController = navController,
-               startDestination = Routes.ScreenGroups.route,
-               modifier = Modifier.padding(paddingValues = paddingValues)
-          ) {
-               composable(Routes.ScreenGroups.route) {
-                    GroupScreen()
+          NavDisplay(
+               backStack = backStack,
+               modifier = Modifier.padding(paddingValues),
+               entryProvider = entryProvider {
+                    entry<ScreenGroups> { GroupScreen() }
+                    entry<ScreenPays>  { PaymentScreen() }
+                    entry<UserScreen>  { UserScreen() }
                }
-               composable(Routes.ScreenPays.route) {
-                    PaymentScreen()
-               }
-               composable(Routes.UserScreen.route) {
-                    UserScreen()
-               }
-          }
+          )
      }
 }

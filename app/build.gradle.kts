@@ -4,16 +4,17 @@ plugins {
      alias(libs.plugins.kotlin.compose)
      alias(libs.plugins.dagger.hilt)
      alias(libs.plugins.ksp)
+     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
      namespace = "com.example.paypals"
-     compileSdk = 35
+     compileSdk = 36
 
      defaultConfig {
           applicationId = "com.example.paypals"
           minSdk = 24
-          targetSdk = 35
+          targetSdk = 36
           versionCode = 1
           versionName = "1.0"
 
@@ -52,7 +53,8 @@ dependencies {
      implementation(libs.androidx.ui.tooling.preview)
      implementation(libs.androidx.material3)
      implementation(libs.androidx.material.icons.extended)
-     implementation(libs.androidx.navigation.compose)
+     implementation(libs.androidx.navigation3.runtime)
+     implementation(libs.androidx.navigation3.ui)
      implementation(libs.androidx.lifecycle.runtime.ktx)
      implementation(libs.androidx.runtime.livedata)
      implementation(libs.hilt.android)
