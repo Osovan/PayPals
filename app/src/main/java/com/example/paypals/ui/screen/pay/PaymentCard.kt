@@ -43,7 +43,7 @@ fun PaymentCard(
      onPayClicked: (Double) -> Unit,
 ) {
      val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-     var amountText by rememberSaveable { mutableStateOf("3") }
+     var amountText by rememberSaveable { mutableStateOf("3.20") }
 
      Log.d(" Oscar PaymentCard", "nextUser actualizado: ${nextUser?.name}")
      Card(

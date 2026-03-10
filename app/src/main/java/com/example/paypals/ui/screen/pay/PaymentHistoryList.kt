@@ -33,7 +33,7 @@ fun PaymentHistoryList(paymentsWithUserNames: List<PaymentWithUser>) {
 @Composable
 fun PaymentHistoryItem(paymentWithUser: PaymentWithUser) {
      val formattedDate = remember(paymentWithUser.payment.timestamp) {
-          val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+          val sdf = java.text.SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy 'a las' HH:mm", java.util.Locale("es", "ES"))
           sdf.format(paymentWithUser.payment.timestamp)
      }
 
