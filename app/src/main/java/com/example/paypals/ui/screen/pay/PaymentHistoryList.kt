@@ -33,8 +33,30 @@ fun PaymentHistoryList(paymentsWithUserNames: List<PaymentWithUser>) {
 @Composable
 fun PaymentHistoryItem(paymentWithUser: PaymentWithUser) {
      val formattedDate = remember(paymentWithUser.payment.timestamp) {
-          val sdf = java.text.SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy 'a las' HH:mm", java.util.Locale("es", "ES"))
-          sdf.format(paymentWithUser.payment.timestamp)
+          val calendar = java.util.Calendar.getInstance()
+          val today = calendar.clone() as java.util.Calendar
+
+          calendar.time = java.util.Date(paymentWithUser.payment.timestamp)
+          val paymentDay = calendar.clone() as java.util.Calendar
+
+          fun isSameDay(c1: java.util.Calendar, c2: java.util.Calendar) =
+               c1.get(java.util.Calendar.YEAR) == c2.get(java.util.Calendar.YEAR) &&
+                       c1.get(java.util.Calendar.DAY_OF_YEAR) == c2.get(java.util.Calendar.DAY_OF_YEAR)
+
+          val yesterday = today.clone() as java.util.Calendar
+          yesterday.add(java.util.Calendar.DAY_OF_YEAR, -1)
+
+          val dayLabel = when {
+               isSameDay(paymentDay, today) -> "Hoy"
+               isSameDay(paymentDay, yesterday) -> "Ayer"
+               else -> {
+                    val sdf = java.text.SimpleDateFormat("EEEE", java.util.Locale("es", "ES"))
+                    sdf.format(paymentDay.time)
+               }
+          }
+
+          val sdf = java.text.SimpleDateFormat("d 'de' MMMM 'de' yyyy 'a las' HH:mm", java.util.Locale("es", "ES"))
+          "$dayLabel ${sdf.format(paymentDay.time)}"
      }
 
      Row(
