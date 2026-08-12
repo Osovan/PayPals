@@ -115,4 +115,10 @@ class PaymentViewModel @Inject constructor(
                paymentRepository.addPayment(payment)
           }
      }
+
+     fun updatePaymentTimestamp(payment: Payment, newTimestamp: Long) {
+          viewModelScope.launch {
+               paymentRepository.addPayment(payment.copy(timestamp = newTimestamp))
+          }
+     }
 }

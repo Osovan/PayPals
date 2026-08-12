@@ -122,7 +122,12 @@ fun PaymentScreen(
 
                          Spacer(modifier = Modifier.height(16.dp))
 
-                         PaymentHistoryList(paymentsWithUserNames = payments)
+                         PaymentHistoryList(
+                              paymentsWithUserNames = payments,
+                              onEditDate = { payment, newTimestamp ->
+                                   paymentViewModel.updatePaymentTimestamp(payment, newTimestamp)
+                              }
+                         )
 
                     }
                }
